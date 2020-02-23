@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <script src="./blocky.min.js"></script>
+  </head>
+  <body></body>
+  <script>
+    new Blocky({ type: Blocky.TYPE.stackTop, content: 'top' });
+    new Blocky({ type: Blocky.TYPE.stackBottom, content: 'bottom' });
+    new Blocky({ type: Blocky.TYPE.stackMiddle, content: 'middle-1' });
+    // new Blocky({ type: Blocky.TYPE.stackMiddle, content: 'middle-2' });
+    // new Blocky({ type: Blocky.TYPE.stackMiddle, content: 'middle-3' });
+    new Blocky({ type: Blocky.TYPE.composite, content: 'comp' });
+    Blocky.createExpressionHoleDOM();
+    new Blocky({
+      type: Blocky.TYPE.expression,
+      contents: ['expr', Blocky.createExpressionHoleDOM(), 'expr']
+    });
+    new Blocky({ type: Blocky.TYPE.expression, content: 'expr' });
+    new Blocky({ type: Blocky.TYPE.contained, content: 'cont-1' });
+    // new Blocky({ type: Blocky.TYPE.contained, content: 'cont-2' });
+    // new Blocky({ type: Blocky.TYPE.contained, content: 'cont-3' });
+  </script>
+</html>
