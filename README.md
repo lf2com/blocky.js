@@ -1,10 +1,10 @@
 # Blocky.js
 
-Blocky.js is a JavaScript library for us to create blockys to build customized blocky chain. To know more about it, have a try [here](./demo/chain.html).
+Blocky.js is a JavaScript library for us to create blockys to build customized blocky chain. To know more about it, have a try [here](https://lf2com.github.io/blocky.js/demo/chain.html).
 
 ## Demo
 
-### [Chain Demo](./demo/chain.html)
+### [Chain Demo](https://lf2com.github.io/blocky.js/demo/chain.html)
 
 > Drag blockys from template rows to the platform and composite them into a chain. Also we can get the root chain result in detail.
 
