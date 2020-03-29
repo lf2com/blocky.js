@@ -19,6 +19,7 @@
     "babelify": "^10.0.0",
     "browserify": "^16.5.0",
     "sassify": "^4.0.1",
-    "uglify-js": "^3.7.7"
+    "uglify-js": "^3.7.7",
+    "webpack": "^4.42.0"
   }
 }

@@ -1,0 +1,214 @@
+<html>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-size: 2vmin;
+      overflow: scroll;
+    }
+    .row {
+      --bg-cover-color: #ddd;
+      --bg-size: .3em;
+
+      position: relative;
+      margin: 1px 0;
+      padding: 10px;
+      width: 350px;
+      box-sizing: border-box;
+      background-image: linear-gradient(-45deg,
+        transparent 25%, var(--bg-cover-color) 25%,
+        var(--bg-cover-color) 50%, transparent 50%,
+        transparent 75%, var(--bg-cover-color) 75%
+      );
+      background-size: var(--bg-size) var(--bg-size);
+    }
+    .wrap {
+      position: relative;
+    }
+    .wrap >blocky-block {
+      position: relative;
+      height: auto;
+      display: block;
+    }
+    #bin {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 200px;
+      height: 200px;
+      background-color: #999;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #bin::before {
+      content: '#recycle_bin';
+    }
+    #bin.drop {
+      filter: brightness(.9);
+    }
+    #chain {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      margin: 10px;
+      font-size: 1.5em;
+    }
+  </style>
+  <script src="../blocky.min.js"></script>
+  <body>
+    <div class="row">
+      <div class="wrap">
+        <blocky-block type="stackMiddle" slot="next">
+          #stackMiddle
+        </blocky-block>
+      </div>
+    </div>
+    <div class="row">
+      <div class="wrap">
+        <blocky-block type="stackBottom">
+          #stackBottom
+        </blocky-block>
+      </div>
+    </div>
+    <div class="row">
+      <div class="wrap">
+        <blocky-block type="composite">
+          #composite
+        </blocky-block>
+      </div>
+    </div>
+    <div class="row">
+      <div class="wrap">
+        <blocky-block type="composite">
+          #comp
+          <blocky-block type="expressionHole">
+            #expressionHole
+          </blocky-block>
+          #end
+        </blocky-block>
+      </div>
+    </div>
+    <div class="row">
+      <div class="wrap">
+        <blocky-block type="contained">
+          #contained
+        </blocky-block>
+      </div>
+    </div>
+    <div class="row">
+      <div class="wrap">
+        <blocky-block type="expression">
+          #expression
+        </blocky-block>
+      </div>
+    </div>
+    <div class="row">
+      <div class="wrap">
+        <blocky-block type="expression">
+          #begin
+          <blocky-block type="expressionHole">
+            #hole
+          </blocky-block>
+          #end
+        </blocky-block>
+      </div>
+    </div>
+
+    <!-- chain initialization sample -->
+    <blocky-block type="stackTop" id="root">
+      #root
+      <blocky-block type="stackMiddle">
+        #middle
+        <blocky-block type="composite">
+          #composite
+        </blocky-block>
+      </blocky-block>
+    </blocky-block>
+
+    <!-- bin -->
+    <div id="bin"></div>
+
+    <!-- get chain -->
+    <button id="chain">Show chain of (#root) in console</button>
+  </body>
+  <script>
+    { // initialize blockys
+      function onStart({ target }) {
+        const rect = target.getBoundingClientRect();
+        const root = document.body;
+        const clonedTarget = target.cloneNode(true);
+        target.parentNode.appendChild(clonedTarget);
+        root.appendChild(target);
+        bindListener(clonedTarget);
+        target.setBlockyOffset(`${rect.x + root.scrollLeft}px`, `${rect.y + root.scrollTop}px`);
+      }
+      function bindListener(dom) {
+        dom.addEventListener('touchstart', onStart, {
+          once: true,
+          capture: true,
+        });
+        dom.addEventListener('mousedown', onStart, {
+          once: true,
+          capture: true,
+        });
+      }
+      Array.prototype.forEach.call(document.querySelectorAll('.row > .wrap > blocky-block'), function(dom) {
+        bindListener(dom);
+      });
+    }
+    
+    const rootBlocky = document.getElementById('root');
+    { // root blocky
+      const body = document.body;
+      rootBlocky.setBlockyOffset(`${body.clientWidth * .5}px`, `10px`);
+    }
+
+    { // bin
+      const bin = document.getElementById('bin');
+      function onEnd(evt) {
+        const rect = bin.getBoundingClientRect();
+        const mx = evt.clientX;
+        const my = evt.clientY;
+        if (rect.x <= mx && mx <= (rect.x + rect.width) && rect.y <= my && my <= (rect.y + rect.height)) {
+          const node = document.elementFromPoint(mx, my);
+          if (node === rootBlocky) {
+            alert('Cannot drop root blocky');
+          } else if (node instanceof customElements.get('blocky-block')) {
+            node.parentNode.removeChild(node);
+          }
+        }
+      }
+      document.body.addEventListener('touchend', onEnd, true);
+      document.body.addEventListener('mouseup', onEnd, true);
+    }
+
+    { // show chain in console
+      const button = document.getElementById('chain');
+      function getLeaf(node) {
+        if (!node) {
+          return null;
+        }
+        return {
+          target: node,
+          next: getLeaf(node.nextBlocky),
+          child: getLeaf(node.childBlocky),
+        };
+      }
+      button.addEventListener('click', function() {
+        console.groupCollapsed('Chain');
+        console.log('root', rootBlocky);
+        console.log('chain-array', [rootBlocky]
+          .concat(rootBlocky.nextBlockys)
+          .map((node) => ({
+            target: node,
+            child: node.childBlockys,
+          }))
+        );
+        console.log('chain-object', getLeaf(rootBlocky));
+        console.groupEnd();
+      }, false);
+    }
+  </script>
+</html>
